@@ -38,10 +38,10 @@ body {
     gap: 20px;
     width: auto;
     font-size: 4em;
-    margin-bottom: 0px; /* Reduced margin to bring it closer to game container */
-    padding: 5px 30px; /* Reduced padding */
-    background-color: #0c151a; /* Match body background */
-    border: 15px solid #fffdf5; /* Warm golden yellow border */
+    margin-bottom: 0px;
+    padding: 5px 30px;
+    background-color: #0c151a;
+    border: 15px solid #fffdf5;
     border-bottom: none;
     border-radius: 30px 30px 0 0;
     font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
@@ -74,13 +74,26 @@ body {
 }
 
 .controls {
-    margin-top: 20px;
+    position: absolute;
+    top: 5%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 200px;
+    z-index: 1001;
+}
+
+.controls.left {
+    left: 10px;
+}
+
+.controls.right {
+    right: 10px;
 }
 
 .controls button {
-    background-color: #1e4c64; /* Dark blue button background */
-    color: #fffdf5; /* Light text for contrast */
-    border: 2px solid #2a6b8a; /* Slightly lighter blue border */
+    background-color: #1e4c64;
+    color: #fffdf5;
+    border: 2px solid #2a6b8a;
     padding: 10px 20px;
     margin: 5px;
     font-size: 1em;
@@ -89,6 +102,7 @@ body {
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    white-space: nowrap;
 }
 
 .controls button:hover {
@@ -154,4 +168,126 @@ body {
 
 .score.score-effect {
     animation: scoreShake 0.5s ease-in-out, scoreBlink 0.5s ease-in-out;
+}
+
+/* Responsive Design Adjustments */
+
+/* For tablets and larger phones (e.g., landscape) */
+@media (max-width: 768px) {
+    .score {
+        font-size: 3em; /* Reduce score font size */
+        padding: 5px 20px;
+        gap: 15px;
+        border-width: 10px; /* Thinner border for score */
+        border-radius: 20px 20px 0 0;
+    }
+
+    #player-score,
+    #computer-score {
+        min-width: 40px; /* Reduce min-width for score numbers */
+    }
+
+    .game-container {
+        border-width: 10px; /* Thinner border for game container */
+        border-radius: 20px;
+        margin-bottom: 15px;
+    }
+
+    .controls.left {
+        left: 5px;
+    }
+
+    .controls.right {
+        right: 5px;
+    }
+
+    .controls button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+        margin: 4px;
+    }
+
+    #startButton, #pauseButton, #restartButton {
+        min-width: 120px; /* Smaller min-width for main buttons */
+    }
+
+    .ball-stats-display {
+        font-size: 1em;
+        margin-top: 10px;
+    }
+
+    .pickup-message-display {
+        font-size: 1.1em;
+    padding: 8px 15px;
+        top: 40px; /* Adjust position slightly */
+    }
+}
+
+/* For smaller phones (e.g., portrait) */
+@media (max-width: 480px) {
+    body {
+        justify-content: flex-start; /* Align to top to prevent cutting off on small screens */
+        padding-top: 10px; /* Add some padding at the top */
+    }
+
+    .score {
+        font-size: 2em; /* Further reduce score font size */
+        padding: 5px 10px;
+        gap: 10px;
+        border-width: 8px;
+        border-radius: 15px 15px 0 0;
+        letter-spacing: 1px;
+    }
+
+    #player-score,
+    #computer-score {
+        min-width: 30px;
+    }
+
+    .game-container {
+        border-width: 8px;
+        border-radius: 15px;
+        margin-bottom: 10px;
+        /* Allow game-container to shrink more effectively with canvas */
+        max-width: 95vw; 
+    }
+
+    .controls {
+        position: static;
+        transform: none;
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 10px;
+        z-index: auto;
+    }
+
+    .controls.left,
+    .controls.right {
+        position: static;
+    }
+
+    .controls button {
+        padding: 10px 15px;
+        font-size: 0.9em;
+        margin: 5px;
+        width: auto;
+        max-width: none;
+    }
+
+    #startButton, #pauseButton, #restartButton {
+        min-width: unset; /* Remove min-width, let width control it */
+    }
+
+    .ball-stats-display {
+    font-size: 0.9em;
+        margin-top: 8px;
+    }
+
+    .pickup-message-display {
+        font-size: 1em;
+        padding: 6px 12px;
+        top: 30px; /* Adjust position further */
+        max-width: 80%;
+        text-align: center;
+    }
 } 

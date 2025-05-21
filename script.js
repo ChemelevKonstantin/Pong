@@ -491,7 +491,7 @@ function updatePlayerPaddle() {
         }
         return;
     }
-
+    
     // Apply vertical movement first
     if (touchControlActive || mouseControlActive) {
         let targetY = lastMouseY - player.height / 2;
@@ -551,7 +551,7 @@ function render() {
     // Draw Paddles
     drawRoundedRect(player.x, player.y, player.width, player.height, player.borderRadius, player.color);
     drawRoundedRect(computer.x, computer.y, computer.width, computer.height, computer.borderRadius, computer.color);
-
+    
     // Draw Ball Trail
     drawBallTrail();
 
@@ -633,7 +633,7 @@ function enhancedGameLoop() {
         return;
     }
 
-    update();
+        update();
     render();
     if (!gamePaused) { // Only update stats if game is running to avoid showing stale data on pause
         updateBallStatsDisplay();
@@ -725,12 +725,12 @@ function startGame() {
     startButton.style.display = 'none';
     pauseButton.style.display = 'inline-block';
     pauseButton.textContent = 'Pause (Space)';
-    restartButton.style.display = 'inline-block';
+    restartButton.style.display = 'inline-block'; 
     
     // Start with a countdown
     startCountdown(1, () => {
-        resetBall(true, true);
-        startPickupSpawner();
+    resetBall(true, true); 
+    startPickupSpawner();
     });
     console.log("Game Started");
 }
@@ -830,21 +830,21 @@ function restartGame() {
             // computer.height = originalPaddleHeight; // If computer paddle size can also change
         }
     });
-    activePickups = [];
+    activePickups = []; 
     if (pickupSpawnTimer) clearInterval(pickupSpawnTimer);
     pickupSpawnTimer = null; // Ensure timer is reset
 
     // Reset paddles (ball is reset in countdown callback)
     player.y = canvas.height / 2 - player.height / 2;
     player.dy = 0;
-    player.shakeIntensity = 0; 
+    player.shakeIntensity = 0;
     player.shakeDuration = 0;
     player.originalX = PADDLE_WIDTH * 2; // Reset originalX for player
     player.x = player.originalX;
 
     computer.y = canvas.height / 2 - computer.height / 2;
     computer.dy = 0;
-    computer.shakeIntensity = 0; 
+    computer.shakeIntensity = 0;
     computer.shakeDuration = 0;
     computer.originalX = canvas.width - PADDLE_WIDTH * 3; // Reset originalX for computer
     computer.x = computer.originalX;
