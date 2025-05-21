@@ -1,0 +1,157 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #0c151a; /* Changed to match the golden yellow theme */
+    font-family: 'Arial', sans-serif;
+    color: #4a4a4a; /* Softer dark gray for text */
+    overflow: hidden; /* Prevent scrollbars from canvas/game elements */
+}
+
+.game-container {
+    border: 15px solid #fffdf5; /* Warm golden yellow border */
+    box-shadow: 0 0 30px rgb(255, 255, 255), 0 0 40px rgba(216, 194, 71, 0.3) inset;
+    margin-bottom: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 30px;
+    overflow: hidden;
+    margin-top: 0;
+    background-color: #0c151a; /* Dark background for the game board */
+}
+
+#pongCanvas {
+    display: block; /* Removes extra space below canvas */
+    background-color: transparent; /* Canvas background itself is handled in JS for trail effect */
+}
+
+.score {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    width: auto;
+    font-size: 4em;
+    margin-bottom: 0px; /* Reduced margin to bring it closer to game container */
+    padding: 5px 30px; /* Reduced padding */
+    background-color: #0c151a; /* Match body background */
+    border: 15px solid #fffdf5; /* Warm golden yellow border */
+    border-bottom: none;
+    border-radius: 30px 30px 0 0;
+    font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
+    font-weight: 900;
+    letter-spacing: 2px;
+    z-index: 1000;
+    box-shadow: 0 0 30px rgb(255, 255, 255);
+}
+
+#player-score {
+    color: #ff6b6b;
+    font-weight: 900;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+    min-width: 60px;
+    text-align: center;
+}
+
+#computer-score {
+    color: #4ecdc4;
+    font-weight: 900;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+    min-width: 60px;
+    text-align: center;
+}
+
+.score-separator {
+    color: rgba(197, 197, 197, 0.5);
+    font-size: 0.8em;
+    margin: 0 10px;
+}
+
+.controls {
+    margin-top: 20px;
+}
+
+.controls button {
+    background-color: #1e4c64; /* Dark blue button background */
+    color: #fffdf5; /* Light text for contrast */
+    border: 2px solid #2a6b8a; /* Slightly lighter blue border */
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.controls button:hover {
+    background-color: #2a6b8a; /* Lighter blue on hover */
+    box-shadow: 0 0 10px rgba(42, 107, 138, 0.5), 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.controls button:active {
+    background-color: #153c52; /* Slightly darker blue when pressed */
+    transform: translateY(1px);
+}
+
+.pickup-message-display {
+    position: absolute;
+    top: 60px; /* Position below score, adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(216, 194, 71, 0.85); /* Semi-transparent golden yellow background */
+    color: #4a4a4a;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1.3em;
+    font-weight: bold;
+    z-index: 100; /* Ensure it's above the canvas */
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    box-shadow: 0 0 10px rgba(216, 194, 71, 0.5); /* Softer glow */
+}
+
+.ball-stats-display {
+    margin-top: 15px;
+    padding: 10px;
+    color: #2a6b8a; /* Changed to match game's blue theme */
+    text-align: center;
+    font-size: 1.2em;
+    font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(42, 107, 138, 0.3);
+}
+
+/* Specific styling for Start, Pause, Restart buttons to ensure they are distinct if needed */
+#startButton, #pauseButton, #restartButton {
+    min-width: 150px; /* Ensure buttons have a good size */
+}
+
+@keyframes scoreShake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    50% { transform: translateX(10px); }
+    75% { transform: translateX(-10px); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes scoreBlink {
+    0% { border-color: #d8c247; }
+    50% { border-color: #ff6b6b; }
+    100% { border-color: #d8c247; }
+}
+
+.game-container.score-effect {
+    animation: scoreShake 0.5s ease-in-out, scoreBlink 0.5s ease-in-out;
+}
+
+.score.score-effect {
+    animation: scoreShake 0.5s ease-in-out, scoreBlink 0.5s ease-in-out;
+} 
