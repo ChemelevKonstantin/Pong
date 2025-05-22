@@ -17,8 +17,6 @@ const MAX_SPEED_FOR_TRAIL_EFFECT = 25;
 // Game state
 let playerScore = 0;
 let computerScore = 0;
-const playerScoreElem = document.getElementById('player-score');
-const computerScoreElem = document.getElementById('computer-score');
 const startButton = document.getElementById('startButton');
 const restartButton = document.getElementById('restartButton');
 const pickupMessageElem = document.getElementById('pickupMessage');
@@ -100,18 +98,92 @@ const originalPaddleHeight = PADDLE_HEIGHT;
 let countdownActive = false;
 let countdownTime = 0;
 
-// Set canvas dimensions (making it big)
+// --- Responsive Canvas Sizing ---
 function resizeCanvas() {
-    canvas.width = Math.min(window.innerWidth * 0.8, 1000); // 80% of window width, max 1000px
-    canvas.height = Math.min(window.innerHeight * 0.7, 600); // 70% of window height, max 600px
-
-    // Recalculate positions based on new canvas size
-    player.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
+    // On mobile, use the actual rendered size from CSS
+    if (window.innerWidth <= 768) {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+    } else {
+        // Desktop: keep previous logic
+        let w = window.innerWidth;
+        let h = window.innerHeight;
+        if (w > h) {
+            canvas.width = Math.min(w * 0.98, 1000);
+            canvas.height = Math.min(h * 0.8, 600);
+        } else {
+            canvas.width = Math.min(w * 0.99, 600);
+            canvas.height = Math.min(h * 0.6, 400);
+        }
+    }
+    // Recalculate paddle/ball positions
+    player.y = canvas.height / 2 - player.height / 2;
     player.x = PADDLE_WIDTH * 2;
-    computer.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
+    computer.y = canvas.height / 2 - computer.height / 2;
     computer.x = canvas.width - PADDLE_WIDTH * 3;
-    if (gameStartedOnce) resetBall(true); // Reset ball to center if game has started
+    if (gameStartedOnce) resetBall(true);
 }
+window.addEventListener('resize', resizeCanvas);
+window.addEventListener('orientationchange', resizeCanvas);
+resizeCanvas();
+
+// --- Mobile Touch Controls (Up/Down Buttons) ---
+const moveUpBtn = document.getElementById('moveUpBtn');
+const moveDownBtn = document.getElementById('moveDownBtn');
+let mobileMoveInterval = null;
+
+function startMobileMove(direction) {
+    stopMobileMove();
+    mobileMoveInterval = setInterval(() => {
+        if (direction === 'up' && player.y > 0) {
+            player.y -= PADDLE_SPEED;
+        } else if (direction === 'down' && player.y < canvas.height - player.height) {
+            player.y += PADDLE_SPEED;
+        }
+    }, 16); // ~60fps
+}
+function stopMobileMove() {
+    if (mobileMoveInterval) clearInterval(mobileMoveInterval);
+    mobileMoveInterval = null;
+}
+if (moveUpBtn && moveDownBtn) {
+    moveUpBtn.addEventListener('touchstart', e => { e.preventDefault(); startMobileMove('up'); });
+    moveUpBtn.addEventListener('touchend', stopMobileMove);
+    moveDownBtn.addEventListener('touchstart', e => { e.preventDefault(); startMobileMove('down'); });
+    moveDownBtn.addEventListener('touchend', stopMobileMove);
+}
+
+// --- Show/Hide Mobile Controls & Orientation Handling ---
+function isMobile() {
+    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+}
+function checkOrientation() {
+    const mobileControls = document.getElementById('mobileControls');
+    const orientationWarning = document.getElementById('orientationWarning');
+    if (isMobile()) {
+        if (window.innerWidth < window.innerHeight) {
+            // Portrait
+            if (orientationWarning) orientationWarning.style.display = 'flex';
+            if (mobileControls) mobileControls.style.display = 'none';
+        } else {
+            // Landscape
+            if (orientationWarning) orientationWarning.style.display = 'none';
+            if (mobileControls) mobileControls.style.display = 'flex';
+        }
+    } else {
+        if (orientationWarning) orientationWarning.style.display = 'none';
+        if (mobileControls) mobileControls.style.display = 'none';
+    }
+}
+window.addEventListener('resize', checkOrientation);
+window.addEventListener('orientationchange', checkOrientation);
+document.addEventListener('DOMContentLoaded', checkOrientation);
+
+// --- Prevent Scrolling on Mobile ---
+document.body.addEventListener('touchmove', function(e) {
+    if (isMobile()) e.preventDefault();
+}, { passive: false });
 
 // Helper function to get current ball radius considering pickups
 function getCurrentBallRadius() {
@@ -437,22 +509,15 @@ function resetBall(toPlayer, initialGameStart = false) {
 function updateScore() {
     if (gameOver) return; // Do not update score if game is over
 
-    playerScoreElem.textContent = playerScore;
-    computerScoreElem.textContent = computerScore;
-
-    triggerScoreEffect(); // Trigger visual effect on score change
-
     if (playerScore >= 5) {
         gameOver = true;
         winner = "Player";
-        // displayWinner(); // This will be called in render
         if (pickupSpawnTimer) clearInterval(pickupSpawnTimer); // Stop spawning pickups
         pauseButton.disabled = true; // Disable pause when game is over
         startButton.disabled = true; // Disable start when game is over
     } else if (computerScore >= 5) {
         gameOver = true;
         winner = "Computer";
-        // displayWinner(); // This will be called in render
         if (pickupSpawnTimer) clearInterval(pickupSpawnTimer); // Stop spawning pickups
         pauseButton.disabled = true; // Disable pause when game is over
         startButton.disabled = true; // Disable start when game is over
@@ -593,6 +658,19 @@ function render() {
         context.fillStyle = "#fffdf5";
         context.fillText("Restart to Play Again", canvas.width / 2, canvas.height / 2 + 40);
     }
+
+    // Draw Score on Canvas (centered at top, no background)
+    context.save();
+    const scoreText = `${playerScore} : ${computerScore}`;
+    context.font = (canvas.width > 600 ? "bold 4em 'Arial Black', Arial, sans-serif" : "bold 2em 'Arial Black', Arial, sans-serif");
+    // Draw score text only, no background
+    context.fillStyle = '#ff6b6b';
+    context.fillText(playerScore, canvas.width/2 - 60, canvas.height * 0.08 + 20);
+    context.fillStyle = '#fff';
+    context.fillText(':', canvas.width/2 - 10, canvas.height * 0.08 + 20);
+    context.fillStyle = '#4ecdc4';
+    context.fillText(computerScore, canvas.width/2 + 30, canvas.height * 0.08 + 20);
+    context.restore();
 }
 
 const paddleHitSound = new Audio();
@@ -602,22 +680,6 @@ const scoreSound = new Audio();
 function playSound(sound) {
     // sound.currentTime = 0;
     // sound.play().catch(error => console.log("Sound play error: " + error));
-}
-
-function updateBallStatsDisplay() {
-    let currentBallRadius = getCurrentBallRadius();
-
-    let currentSpeed = ball.speed;
-    const speedBoost = activePickups.find(p => p.type === PICKUP_TYPES.SPEED_BOOST && p.isActive);
-    // Note: The actual dx/dy speed is derived from ball.speed * cos/sin(angle) and boosted at collision.
-    // Displaying ball.speed gives the base speed, which is more stable for display.
-    // If a speed boost is active, we can indicate that.
-    let speedDisplay = currentSpeed.toFixed(1);
-    if (speedBoost) {
-        speedDisplay += " (BOOSTED)";
-    }
-
-    ballStatsElem.innerHTML = `Ball Speed: ${speedDisplay}<br>Ball Size: ${currentBallRadius.toFixed(1)}`;
 }
 
 function enhancedGameLoop() {
@@ -635,9 +697,6 @@ function enhancedGameLoop() {
 
         update();
     render();
-    if (!gamePaused) { // Only update stats if game is running to avoid showing stale data on pause
-        updateBallStatsDisplay();
-    }
     requestAnimationFrame(enhancedGameLoop);
 }
 
@@ -871,7 +930,6 @@ function restartGame() {
     startCountdown(1, () => {
         resetBall(true, true); // Reset ball to center, for player, initial random direction
         startPickupSpawner();    // Start spawning pickups for the new game
-        updateBallStatsDisplay(); // Update ball stats for the new game
         updateScore(); // Ensure score display is 0-0 (belt and braces)
         // gamePaused is now false (set by startCountdown completion)
         pauseButton.disabled = false; // Enable pause button now that game is truly starting
@@ -888,7 +946,6 @@ window.addEventListener('resize', resizeCanvas);
 // Initial setup
 resizeCanvas();
 updateScore();
-updateBallStatsDisplay(); // Initial call to show stats before game starts
 enhancedGameLoop();
 console.log('Cool Pong Initialized! Click Start Button.');
 
@@ -1168,14 +1225,12 @@ function drawBallTrail() {
 function triggerScoreEffect() {
     const gameContainer = document.querySelector('.game-container');
     const scoreDisplay = document.querySelector('.score');
-    
-    // Add the effect class
-    gameContainer.classList.add('score-effect');
-    scoreDisplay.classList.add('score-effect');
-    
+    // Add the effect class if the elements exist
+    if (gameContainer) gameContainer.classList.add('score-effect');
+    if (scoreDisplay) scoreDisplay.classList.add('score-effect');
     // Remove the effect class after animation completes
     setTimeout(() => {
-        gameContainer.classList.remove('score-effect');
-        scoreDisplay.classList.remove('score-effect');
+        if (gameContainer) gameContainer.classList.remove('score-effect');
+        if (scoreDisplay) scoreDisplay.classList.remove('score-effect');
     }, 500); // Match the animation duration
 } 

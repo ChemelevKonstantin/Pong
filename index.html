@@ -8,11 +8,6 @@
 </head>
 <body>
     <div id="pickupMessage" class="pickup-message-display"></div>
-    <div class="score">
-        <div id="player-score">0</div>
-        <div class="score-separator">:</div>
-        <div id="computer-score">0</div>
-    </div>
     <div class="game-container">
         <canvas id="pongCanvas"></canvas>
     </div>
@@ -22,6 +17,13 @@
         <button id="restartButton" style="display:none;">Restart (R)</button>
     </div>
     <div id="ballStats" class="ball-stats-display"></div>
+    <div class="mobile-controls" id="mobileControls" style="display:none;">
+        <button id="moveUpBtn">▲</button>
+        <button id="moveDownBtn">▼</button>
+    </div>
+    <div id="orientationWarning" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); color:#fff; z-index:9999; align-items:center; justify-content:center; text-align:center; font-size:2em;">
+        Please rotate your device for a better experience!
+    </div>
     <script src="script.js"></script>
 </body>
 </html> 

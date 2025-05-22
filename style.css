@@ -9,6 +9,14 @@ body {
     font-family: 'Arial', sans-serif;
     color: #4a4a4a; /* Softer dark gray for text */
     overflow: hidden; /* Prevent scrollbars from canvas/game elements */
+    overscroll-behavior: none; /* Prevent scroll chaining on mobile */
+    touch-action: none; /* Prevent default gestures like double-tap zoom */
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* Prevent scrolling */
 }
 
 .game-container {
@@ -26,52 +34,18 @@ body {
 }
 
 #pongCanvas {
-    display: block; /* Removes extra space below canvas */
-    background-color: transparent; /* Canvas background itself is handled in JS for trail effect */
+    width: 100vw;
+    height: 60vw;
+    max-width: 1000px;
+    max-height: 600px;
+    aspect-ratio: 5/3;
+    background-color: transparent;
+    display: block;
+    margin: 0 auto;
+    touch-action: none; /* Prevent default gestures */
 }
 
-.score {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    width: auto;
-    font-size: 4em;
-    margin-bottom: 0px;
-    padding: 5px 30px;
-    background-color: #0c151a;
-    border: 15px solid #fffdf5;
-    border-bottom: none;
-    border-radius: 30px 30px 0 0;
-    font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
-    font-weight: 900;
-    letter-spacing: 2px;
-    z-index: 1000;
-    box-shadow: 0 0 30px rgb(255, 255, 255);
-}
-
-#player-score {
-    color: #ff6b6b;
-    font-weight: 900;
-    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
-    min-width: 60px;
-    text-align: center;
-}
-
-#computer-score {
-    color: #4ecdc4;
-    font-weight: 900;
-    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
-    min-width: 60px;
-    text-align: center;
-}
-
-.score-separator {
-    color: rgba(197, 197, 197, 0.5);
-    font-size: 0.8em;
-    margin: 0 10px;
-}
+.score, #player-score, #computer-score, .score-separator { display: none !important; }
 
 .controls {
     position: absolute;
@@ -174,23 +148,44 @@ body {
 
 /* For tablets and larger phones (e.g., landscape) */
 @media (max-width: 768px) {
-    .score {
-        font-size: 3em; /* Reduce score font size */
-        padding: 5px 20px;
-        gap: 15px;
-        border-width: 10px; /* Thinner border for score */
-        border-radius: 20px 20px 0 0;
+    html, body {
+        height: auto;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #0c151a !important;
     }
-
-    #player-score,
-    #computer-score {
-        min-width: 40px; /* Reduce min-width for score numbers */
-    }
-
-    .game-container {
-        border-width: 10px; /* Thinner border for game container */
+    #pongCanvas {
+        width: 95vw;
+        height: 60vw;
+        max-width: 480px;
+        max-height: 320px;
+        aspect-ratio: 3/2;
+        position: static;
+        margin: 24px auto 0 auto;
+        display: block;
         border-radius: 20px;
-        margin-bottom: 15px;
+        z-index: 1;
+        box-shadow: 0 0 30px rgb(255,255,255), 0 0 40px rgba(216,194,71,0.3) inset;
+        border: 8px solid #fffdf5;
+        background: transparent;
+    }
+    .game-container {
+        border: 8px solid #fffdf5;
+        border-radius: 20px;
+        box-shadow: 0 0 30px rgb(255,255,255), 0 0 40px rgba(216,194,71,0.3) inset;
+        margin: 0 auto 10px auto;
+        padding: 0;
+        width: auto;
+        height: auto;
+        max-width: 500px;
+        max-height: 340px;
+        background: #0c151a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: static;
+        z-index: 1;
     }
 
     .controls.left {
@@ -289,5 +284,59 @@ body {
         top: 30px; /* Adjust position further */
         max-width: 80%;
         text-align: center;
+    }
+
+    #pongCanvas {
+        width: 99vw;
+        height: 65vw;
+        max-width: 100vw;
+        max-height: 80vw;
+    }
+}
+
+.mobile-controls {
+    position: fixed;
+    bottom: 5vh;
+    right: 5vw;
+    display: flex;
+    flex-direction: column;
+    gap: 2vw;
+    z-index: 1002;
+}
+.mobile-controls button {
+    width: 60px;
+    height: 60px;
+    font-size: 2em;
+    background: #1e4c64;
+    color: #fffdf5;
+    border: 3px solid #2a6b8a;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    margin: 0;
+    padding: 0;
+    outline: none;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.mobile-controls button:active {
+    background: #153c52;
+    box-shadow: 0 0 12px #2a6b8a;
+}
+#orientationWarning {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 2em;
+    padding: 0 10vw;
+}
+@media (max-width: 600px) {
+    .mobile-controls button {
+        width: 44px;
+        height: 44px;
+        font-size: 1.3em;
+    }
+    #orientationWarning {
+        font-size: 1.2em;
+        padding: 0 2vw;
     }
 } 
